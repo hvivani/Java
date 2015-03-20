@@ -46,17 +46,9 @@ public class Main {
 		
 		StepFactory stepFactory = new StepFactory();
 		
-		String clusterCreated="";
 
-		//System.out.println("CreateCluster................................:");
-		//clusterCreated=launchCluster(emrClient);
-		//System.out.println("ClusterCreated: :" + clusterCreated);
-        //System.out.println("DescribeCluster................................:");
-        //describeCluster(emrClient,"j-YMFWLH64RHS7");
-        //System.out.println("DescribeClusterInstances.......................:");
-        //describeClusterInstances(emrClient,"j-YMFWLH64RHS7");
         System.out.println("VerifyHealthyRunningSpotInstances..............:");
-        verifyHealthyRunningSpotInstances(emrClient,"j-YMFWLH64RHS7");
+        verifyHealthyRunningSpotInstances(emrClient,"j-XXX");
            
 	}
 	
