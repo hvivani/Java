@@ -71,14 +71,19 @@ public class Main {
         for (InstanceGroup instgroup: instgrouplist ){
         	System.out.println("checking " + instgroup.getId().toString());
         	difference = getDiffRunningSpotInstances(client, clusterId, instgroup);
+        	difference=1; //forcing difference to create a new group.
         	System.out.println("difference " + difference );
         	if (difference>0){
-        		touchfile= new File("/tmp/"+ instgroup.getId()); //this file has the name of the instace group. If file already exists, the replacement for that group was already created. No need to launch a new instance group. 
-        		if (instgroup.getMarket() == MarketType.SPOT.toString() && !fileExist(touchfile)){
-            		System.out.println("Let's launch more instance" + "Market: " + instgroup.getBidPrice());
+        		touchfile= new File("/tmp/"+ instgroup.getId() + ".txt"); //this file has the name of the instace group. If file already exists, the replacement for that group was already created. No need to launch a new instance group.
+        		//if it is a TASK group AND are SPOT instances AND the group was not created already: 
+        		if (instgroup.getInstanceGroupType().compareTo("TASK")==0 && instgroup.getMarket().compareTo(MarketType.SPOT.toString())==0 && !fileExist(touchfile)){
+            		System.out.println("Let's launch more instances " + "Market: " + instgroup.getMarket());
                     InstanceGroupConfig instanceGroupConfigTask = new InstanceGroupConfig(); //creating a new instanceGroup.
+            		//InstanceGroup instanceGroupConfigTask = new InstanceGroup(); //creating a new instanceGroup.
                     instanceGroupConfigTask.setInstanceCount(instgroup.getRequestedInstanceCount());
+            		//instanceGroupConfigTask.setRunningInstanceCount(instgroup.getRequestedInstanceCount());
                     instanceGroupConfigTask.setInstanceRole("Task");
+            		//instanceGroupConfigTask.setInstanceGroupType("Task");
                     instanceGroupConfigTask.setInstanceType(instgroup.getInstanceGroupType());
                     instanceGroupConfigTask.setMarket("SPOT");
                     Double bidPrice=Double.parseDouble(instgroup.getBidPrice()) + 0.01;
@@ -88,6 +93,8 @@ public class Main {
                     }catch (Exception e) {
                         System.out.println("error trying to write touch file:" + e.getMessage());
                     }
+                    //instgrouplist.a.add(instanceGroupConfigTask);
+                    //RequestSpotInstancesRequest requestRequest = new RequestSpotInstancesRequest();
         		}
         		//to evaluate: I cannot create a core group yet if it is lost by bid price. Cluster will terminate if core group is lost.
         	}else
@@ -112,6 +119,7 @@ public class Main {
 
 
 	public static boolean fileExist(File file) {
+		System.out.println("checking if file exists: " + file.toString());
 		if (file.exists()) {
 			System.out.println(file.getName() + " exists");
 			return true;
