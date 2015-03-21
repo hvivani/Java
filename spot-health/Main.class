@@ -85,15 +85,15 @@ public class Main {
 	       request.setName("EMR Java SDK Testings");
 	       request.setAmiVersion("3.3.1");
 	       //.withSteps(enabledebugging, installHive)
-	       request.setLogUri("s3://vivanih-emr//");
+	       request.setLogUri("s3://mybucket/");
 	       //request.setServiceRole("service_role");
 	       //request.setJobFlowRole("jobflow_role");
 	       
 
 	       JobFlowInstancesConfig instances = new JobFlowInstancesConfig();  
 	       	request.setInstances(instances );
-		    instances.setEc2KeyName("vivanih-public-key");
-		    instances.setInstanceCount(new Integer(5));
+		    instances.setEc2KeyName("my-key");
+		    instances.setInstanceCount(new Integer(3));
 		    instances.setKeepJobFlowAliveWhenNoSteps(new Boolean(true));
 		    instances.setMasterInstanceType("m1.medium");
 		    instances.setSlaveInstanceType("m1.medium");
