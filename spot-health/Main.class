@@ -196,7 +196,7 @@ public class Main {
 	public static int getDiffRunningSpotInstances(AmazonElasticMapReduce client, String clusterId, InstanceGroup instgroup)
 	{
 		int count=0;
-	    if (instgroup.getMarket() == MarketType.SPOT.toString()){
+	    if (instgroup.getMarket().compareTo(MarketType.SPOT.toString())==0){
 	       System.out.println("Market: " + instgroup.getBidPrice());
 	       System.out.println("Instances: " + instgroup.getRunningInstanceCount() +" / " +instgroup.getRequestedInstanceCount() );
 	       //I will return difference if Instance Group is not provisioning.
@@ -206,7 +206,7 @@ public class Main {
 	    } 
 		return count;
 	}
-	
+		
 
 
 	public static boolean fileExist(File file) {
