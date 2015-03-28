@@ -65,96 +65,19 @@ public class Main {
 		AmazonElasticMapReduce emrClient = new AmazonElasticMapReduceClient(new DefaultAWSCredentialsProviderChain());
 		
 		emrClient.setRegion(Region.EU_Ireland.toAWSRegion());
-		
-		//String clusterCreated="";
-		
+
 		//REMOVE THIS: just for local tests
 		args=new String[1];
 		args[0]=getClusterId();
 		//"j-3M50UTXXXXXX";
 		//REMOVE THIS:
 		
-		//System.out.println("CreateCluster................................:");
-		//clusterCreated=launchCluster(emrClient);
-		//System.out.println("ClusterCreated: :" + clusterCreated);
-   //     System.out.println("DescribeCluster................................:");
-   //     describeCluster(emrClient,args[0].toString());
-   //     System.out.println("DescribeClusterInstances.......................:");
-   //     describeClusterInstances(emrClient,args[0].toString());
-        System.out.println("VerifyHealthyRunningSpotInstances..............:");
-        verifyHealthyRunningSpotInstances(emrClient,args[0].toString());
-        
-        
-           
-	}
-	
-	public static String launchCluster(AmazonElasticMapReduce client){
-		   RunJobFlowRequest request = new RunJobFlowRequest();
-	       request.setName("EMR Java SDK Testings");
-	       request.setAmiVersion("3.3.1");
-	       //.withSteps(enabledebugging, installHive)
-	       request.setLogUri("s3://your-bucket-emr//");
-	       //request.setServiceRole("service_role");
-	       //request.setJobFlowRole("jobflow_role");
-	       
+	        System.out.println("VerifyHealthyRunningSpotInstances..............:");
+        	verifyHealthyRunningSpotInstances(emrClient,args[0].toString());
 
-	       JobFlowInstancesConfig instances = new JobFlowInstancesConfig();  
-	       	request.setInstances(instances );
-		    instances.setEc2KeyName("your-key");
-		    instances.setInstanceCount(new Integer(5));
-		    instances.setKeepJobFlowAliveWhenNoSteps(new Boolean(true));
-		    instances.setMasterInstanceType("m1.medium");
-		    instances.setSlaveInstanceType("m1.medium");
-		    
-		    RunJobFlowResult result = client.runJobFlow(request);		
-	        System.out.println("output: " + result.toString());
-	        return result.toString();
 	}
 	
-	public static String addStep(AmazonElasticMapReduce client, String clusterId){
-		StepConfig hive = new StepConfig("Hive", new StepFactory().newInstallHiveStep());
-	    HadoopJarStepConfig hadoopConfig1 = new HadoopJarStepConfig()
-        .withJar("s3://mybucket/my-jar-location1")
-        .withMainClass("com.my.Main1") // optional main class, this can be omitted if jar above has a manifest
-        .withArgs("--verbose"); // optional list of arguments
-	    StepConfig customStep = new StepConfig("Step1", hadoopConfig1);
 
-	    AddJobFlowStepsResult result = client.addJobFlowSteps(new AddJobFlowStepsRequest()
-        .withJobFlowId(clusterId)
-        .withSteps(hive, customStep));
-	    System.out.println(result.getStepIds());
-	    return result.getStepIds().toString();
-	}
-	
-	public static void describeCluster(AmazonElasticMapReduce client, String clusterId)
-	{
-        DescribeClusterResult result = client.describeCluster(new DescribeClusterRequest().withClusterId(clusterId));
-        
-        System.out.println("ClusterId: " + result.getCluster().getId());
-        System.out.println("Name: " + result.getCluster().getName());
-        System.out.println("State: " + result.getCluster().getStatus().getState());
-        System.out.println("Reason: " + result.getCluster().getStatus().getStateChangeReason());
-        System.out.println("Timeline: " + result.getCluster().getStatus().getTimeline());		
-	}
-	
-	public static void describeClusterInstances(AmazonElasticMapReduce client, String clusterId)
-	{
-        List<InstanceGroup> instgrouplist = client.listInstanceGroups(new ListInstanceGroupsRequest().withClusterId(clusterId)).getInstanceGroups();
-        for (InstanceGroup instgroup: instgrouplist ){
-     	   System.out.println("Type: " + instgroup.getInstanceGroupType());
-     	   System.out.println("Status: " + instgroup.getStatus().getState());
-     	   System.out.println("Timeline: " + instgroup.getStatus().getTimeline());
-     	   System.out.println("Market: " + instgroup.getMarket());
-     	   if (instgroup.getMarket() == MarketType.SPOT.toString()){
-     	   System.out.println("Market: " + instgroup.getBidPrice());
-     	   }
-     	   System.out.println("Instance type: " + instgroup.getInstanceType());
-     	   System.out.println("Instances: " + instgroup.getRunningInstanceCount() +" / " +instgroup.getRequestedInstanceCount() );
-     	    
-        } 
-	}
-	
-	
 	//This method verifies if an instance group using Spot instances has less instances running than initially scheduled and 
 	//launch a new instance group to replace previous one.
 	public static void verifyHealthyRunningSpotInstances(AmazonElasticMapReduce client, String clusterId){
@@ -215,8 +138,6 @@ public class Main {
 		return count;
 	}
 	
-
-
 	private static boolean fileExist(File file) {
 		System.out.println("checking if file exists: " + file.toString());
 		if (file.exists()) {
